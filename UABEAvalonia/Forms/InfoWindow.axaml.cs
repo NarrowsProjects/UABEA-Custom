@@ -74,7 +74,6 @@ namespace UABEAvalonia
             btnImportDump.Click += BtnImportDump_Click;
             btnEditData.Click += BtnEditData_Click;
             btnRemove.Click += BtnRemove_Click;
-            btnPlugin.Click += BtnPlugin_Click;
             dataGrid.SelectionChanged += DataGrid_SelectionChanged;
             Closing += InfoWindow_Closing;
 
@@ -399,16 +398,6 @@ namespace UABEAvalonia
             }
         }
 
-        private async void BtnPlugin_Click(object? sender, Avalonia.Interactivity.RoutedEventArgs e)
-        {
-            if (await FailIfNothingSelected())
-                return;
-
-            List<AssetContainer> conts = GetSelectedAssetsReplaced();
-            PluginWindow plug = new PluginWindow(this, Workspace, conts, pluginManager);
-            await plug.ShowDialog(this);
-        }
-
         private void DataGrid_SelectionChanged(object? sender, SelectionChangedEventArgs e)
         {
             var gridItem = (AssetInfoDataGridItem)dataGrid.SelectedItem;
@@ -425,6 +414,31 @@ namespace UABEAvalonia
                 boxPathId.Text = gridItem.PathID.ToString();
                 boxFileId.Text = gridItem.FileID.ToString();
                 boxType.Text = $"0x{gridItem.TypeID:X8} ({gridItem.Type})";
+            }
+            
+            pluginButtonsPanel.Children.Clear();
+
+            List<AssetContainer> conts = GetSelectedAssetsReplaced();
+            List<UABEAPluginMenuInfo> plugins = pluginManager.GetPluginsThatSupport(Workspace.am, conts);
+
+            foreach (var plugin in plugins)
+            {
+                var btn = new Button
+                {
+                    Content = plugin.displayName,
+                    HorizontalAlignment = Avalonia.Layout.HorizontalAlignment.Stretch,
+                    Margin = new Thickness(0, 2)
+                };
+
+                btn.Click += async (_, __) =>
+                {
+                    
+                    var plugOpt = plugin.pluginOpt;
+                    await plugOpt.ExecutePlugin(this, Workspace, conts);
+
+                };
+
+                pluginButtonsPanel.Children.Add(btn);
             }
         }
 

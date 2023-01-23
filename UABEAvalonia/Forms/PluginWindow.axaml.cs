@@ -39,6 +39,7 @@ namespace UABEAvalonia
 
         private async void BtnOk_Click(object? sender, Avalonia.Interactivity.RoutedEventArgs e)
         {
+            
             var menuPlugInf = boxPluginList.SelectedItem as UABEAPluginMenuInfo;
 
             if (menuPlugInf == null)

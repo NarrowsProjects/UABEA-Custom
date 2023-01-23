@@ -89,7 +89,7 @@
         <Button HorizontalAlignment="Stretch" HorizontalContentAlignment="Center" Content="Edit Data" Name="btnEditData" Margin="5"/>
         <Button HorizontalAlignment="Stretch" HorizontalContentAlignment="Center" Content="Remove" Name="btnRemove" Margin="5"/>
       </UniformGrid>
-      <Button HorizontalAlignment="Stretch" HorizontalContentAlignment="Center" Content="Plugins" Name="btnPlugin" Margin="5"/>
+      <StackPanel HorizontalAlignment="Stretch" Name="pluginButtonsPanel" Margin="5,0,5,5" Spacing="4"/>
 
     </StackPanel>
   </Grid>
