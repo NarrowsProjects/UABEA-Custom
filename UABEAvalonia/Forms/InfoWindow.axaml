@@ -89,8 +89,15 @@
         <Button HorizontalAlignment="Stretch" HorizontalContentAlignment="Center" Content="Edit Data" Name="btnEditData" Margin="5"/>
         <Button HorizontalAlignment="Stretch" HorizontalContentAlignment="Center" Content="Remove" Name="btnRemove" Margin="5"/>
       </UniformGrid>
-      <StackPanel HorizontalAlignment="Stretch" Name="pluginButtonsPanel" Margin="5,0,5,5" Spacing="4"/>
-
+      <StackPanel HorizontalAlignment="Stretch" Name="pluginSection" Margin="5,10,5,5" Spacing="4">
+          <TextBlock Text="Plugins" Margin="2,0,0,2"/>
+          <Border BorderBrush="#555" BorderThickness="1" CornerRadius="3" Padding="5" MinHeight="45">
+              <Grid>
+                  <TextBlock Name="noPluginsText" Text="No plugins available" HorizontalAlignment="Center" VerticalAlignment="Center" Foreground="#888"/>
+                  <StackPanel Name="pluginButtonsPanel" Spacing="4"/>
+              </Grid>
+          </Border>
+      </StackPanel>
     </StackPanel>
   </Grid>
 </Window>
