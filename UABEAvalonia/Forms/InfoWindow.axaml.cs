@@ -31,7 +31,7 @@ namespace UABEAvalonia
         private bool searching;
 
         private bool ignoreCloseEvent;
-
+        private MainWindow mainWindow;
         private HashSet<AssetClassID> filteredOutTypeIds;
 
         //would prefer using a stream over byte[] but whatever, will for now
@@ -89,11 +89,12 @@ namespace UABEAvalonia
             }
         }
 
-        public InfoWindow(AssetsManager assetsManager, List<AssetsFileInstance> assetsFiles, bool fromBundle) : this()
+        public InfoWindow(AssetsManager assetsManager, List<AssetsFileInstance> assetsFiles, bool fromBundle, MainWindow mainWindow) : this()
         {
             Workspace = new AssetWorkspace(assetsManager, fromBundle);
             Workspace.ItemUpdated += Workspace_ItemUpdated;
             Workspace.MonoTemplateLoadFailed += Workspace_MonoTemplateLoadFailed;
+            this.mainWindow = mainWindow;
 
             LoadAllAssetsWithDeps(assetsFiles);
             SetupContainers();
@@ -125,6 +126,8 @@ namespace UABEAvalonia
         private async void MenuSave_Click(object? sender, Avalonia.Interactivity.RoutedEventArgs e)
         {
             await SaveFile(false);
+            mainWindow.CommitChangedAssets(this);
+            mainWindow.MenuSave_Click(sender, e);
             ClearModified();
             Workspace.Modified = false;
         }
@@ -515,8 +518,6 @@ namespace UABEAvalonia
                             "Write exception", "There was a problem while writing the file:\n" + ex.ToString());
                     }
                 }
-
-                await MessageBoxUtil.ShowDialog(this, "Success", "File saved. To complete changes, exit this window and File->Save in bundle window.");
             }
             else
             {

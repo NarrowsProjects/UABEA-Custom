@@ -96,8 +96,8 @@ namespace UABEAvalonia
                 Close(false);
                 return;
             }
-
-            InfoWindow info = new InfoWindow(am, fileInsts, false);
+            MainWindow mainWindow = new();
+            InfoWindow info = new(am, fileInsts, false, mainWindow);
             foreach (KeyValuePair<AssetsFileInstance, List<AssetsReplacer>> kvp in replacerLists)
             {
                 AssetsFileInstance fileInst = kvp.Key;

@@ -147,7 +147,7 @@ namespace UABEAvalonia
                     return;
                 }
 
-                InfoWindow info = new InfoWindow(am, fileInstances, false);
+                InfoWindow info = new(am, fileInstances, false, this);
                 info.Show();
                 info.Closing += (sender, _) =>
                 {
@@ -240,7 +240,7 @@ namespace UABEAvalonia
             about.ShowDialog(this);
         }
 
-        private async void MenuSave_Click(object? sender, RoutedEventArgs e)
+        public async void MenuSave_Click(object? sender, RoutedEventArgs e)
         {
             await AskForLocationAndSave(false);
         }
@@ -376,7 +376,7 @@ namespace UABEAvalonia
                 // we're assuming it's fine since two infos can
                 // be opened from a bundle without problems
 
-                InfoWindow info = new InfoWindow(am, new List<AssetsFileInstance> { fileInst }, true);
+                InfoWindow info = new(am, new List<AssetsFileInstance> { fileInst }, true, this);
                 info.Closing += InfoWindow_Closing;
                 info.Show();
                 openInfoWindows.Add(info);
@@ -549,12 +549,15 @@ namespace UABEAvalonia
 
         private void InfoWindow_Closing(object? sender, System.ComponentModel.CancelEventArgs e)
         {
-            if (sender == null)
-                return;
+            if (sender == null) return;
 
             InfoWindow window = (InfoWindow)sender;
             openInfoWindows.Remove(window);
+            CommitChangedAssets(window);
+        }
 
+        public void CommitChangedAssets(InfoWindow window)
+        {
             if (window.Workspace.fromBundle && window.ChangedAssetsDatas != null)
             {
                 List<Tuple<AssetsFileInstance, byte[]>> assetDatas = window.ChangedAssetsDatas;
