@@ -74,7 +74,6 @@ namespace UABEAvalonia
             btnImportDump.Click += BtnImportDump_Click;
             btnEditData.Click += BtnEditData_Click;
             btnRemove.Click += BtnRemove_Click;
-            btnPlugin.Click += BtnPlugin_Click;
             dataGrid.SelectionChanged += DataGrid_SelectionChanged;
             Closing += InfoWindow_Closing;
 
@@ -399,14 +398,32 @@ namespace UABEAvalonia
             }
         }
 
-        private async void BtnPlugin_Click(object? sender, Avalonia.Interactivity.RoutedEventArgs e)
-        {
-            if (await FailIfNothingSelected())
-                return;
+        private void UpdatePluginPanel()
+        {            
+            pluginButtonsPanel.Children.Clear();
 
             List<AssetContainer> conts = GetSelectedAssetsReplaced();
-            PluginWindow plug = new PluginWindow(this, Workspace, conts, pluginManager);
-            await plug.ShowDialog(this);
+            List<UABEAPluginMenuInfo> plugins = pluginManager.GetPluginsThatSupport(Workspace.am, conts);
+
+            foreach (var plugin in plugins)
+            {
+                var btn = new Button
+                {
+                    Content = plugin.displayName,
+                    HorizontalAlignment = Avalonia.Layout.HorizontalAlignment.Stretch,
+                    Margin = new Thickness(0, 2)
+                };
+
+                btn.Click += async (_, __) =>
+                {
+                    var plugOpt = plugin.pluginOpt;
+                    await plugOpt.ExecutePlugin(this, Workspace, conts);
+                };
+
+                pluginButtonsPanel.Children.Add(btn);
+            }
+
+            noPluginsText.IsVisible = plugins.Count == 0;
         }
 
         private void DataGrid_SelectionChanged(object? sender, SelectionChangedEventArgs e)
@@ -426,6 +443,8 @@ namespace UABEAvalonia
                 boxFileId.Text = gridItem.FileID.ToString();
                 boxType.Text = $"0x{gridItem.TypeID:X8} ({gridItem.Type})";
             }
+
+            UpdatePluginPanel();
         }
 
         private async void InfoWindow_Closing(object? sender, CancelEventArgs e)
